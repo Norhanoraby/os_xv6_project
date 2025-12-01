@@ -149,6 +149,8 @@ UPROGS=\
 	$U/_tail\
 	$U/_cp\
 	$U/_nano\
+	$U/_mv\
+	$U/_diff\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)

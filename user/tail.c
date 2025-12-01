@@ -1,96 +1,85 @@
 #include "kernel/types.h"
 #include "kernel/stat.h"
 #include "user/user.h"
-#include  "kernel/fcntl.h"
+#include "kernel/fcntl.h"
 
-int
-main(int argc, char *argv[])
-{
- if (argc == 2 && strcmp(argv[1], "?") == 0) {
-    printf("Usage: Enter a valid file name\n");
-    exit(0);
-  }
+#define BUF_SIZE 512
+#define MAX_FILE_SIZE 10000  // assume files < 10 KB
 
-  switch(argc)
-  {
-  case(2):
-  {
-  int fd = open(argv[1], O_RDONLY);
-  if (fd < 0) {
-    printf("tail: cannot open %s\n", argv[1]);
-    exit(0);
-  }
+int main(int argc, char *argv[]) {
+    if(argc < 2 || argc > 4) {
+        printf("Usage: tail <filename> [-n number]\n");
+        exit(0);
+    }
 
-  char buf[512];
-  int m = 10;
-  int r;
+    char *filename = argv[1];
+    int n = 10;  // default number of lines
 
-
-  while ((r = read(fd, buf, sizeof(buf))) > 0) {
-    write(1, buf, r);
-       if (r < 0) {
-        printf("tail: read error\n");
-       }
-    close(fd);
-    int count = 0;
-    for (int i = r - 1; i >= 0; i--) {
-        if (buf[i] == '\n') {
-            count++;
-            if (count == m + 1) {
-                write(1, buf + i + 1, r - i - 1);
-                return 0;
-            }
-                write(1, buf, r);
+    // Only allow "tail filename" or "tail filename -n number"
+    if(argc == 4) {
+        if(strcmp(argv[2], "-n") != 0) {
+            printf("Usage: tail <filename> [-n number]\n");
+            exit(0);
+        }
+        n = atoi(argv[3]);
+        if(n <= 0) {
+            printf("tail: invalid number of lines '%s'\n", argv[3]);
+            exit(0);
         }
     }
-  }
-  break;
-  }
 
-  case(4):
-  {
-  if(strcmp(argv[2], "-n") != 0 )
-  {
-    printf("Usage: tail <filename> -n <number>");
-    exit(0);
-  }
-  int fd = open(argv[1], O_RDONLY);
-  if (fd < 0) {
-    printf("tail: cannot open %s\n", argv[1]);
-    exit(0);
-  }
+    // Reject other invalid forms
+    if(argc == 3) {
+        printf("Usage: tail <filename> [-n number]\n");
+        exit(0);
+    }
 
-  char buf[512];
-  int n = atoi(argv[3]);
-  int f;
+    int fd = open(filename, O_RDONLY);
+    if(fd < 0) {
+        printf("tail: cannot open %s\n", filename);
+        exit(0);
+    }
 
-  // Read entire file for now
-  while ((f = read(fd, buf, sizeof(buf))) > 0) {
-        if (f < 0) {
-        printf("tail: read error\n");
+    char buf[BUF_SIZE];
+    char *filebuf = malloc(MAX_FILE_SIZE);
+    if(!filebuf) {
+        printf("tail: memory error\n");
+        close(fd);
+        exit(0);
+    }
+
+    int size = 0;
+    int r;
+    while((r = read(fd, buf, sizeof(buf))) > 0) {
+        if(size + r > MAX_FILE_SIZE) {
+            printf("tail: file too large\n");
+            free(filebuf);
+            close(fd);
+            exit(0);
         }
-close(fd);
-int count = 0;
-    for (int i = f - 1; i >= 0; i--) {
-        if (buf[i] == '\n') {
-            count++;
-            if (count == n + 1) { // stop after finding the N-th line from bottom
-                write(1, buf + i + 1, f - i - 1);
-                return 0;
-            }
-                write(1, buf, f);
+        memmove(filebuf + size, buf, r);
+        size += r;
+    }
+    close(fd);
+
+    // Count lines from the end
+    int linecount = 0;
+    int start = 0;
+    for(int i = size-1; i >= 0; i--) {
+        if(filebuf[i] == '\n') linecount++;
+        if(linecount == n ) {
+            start = i + 1;
+            break;
         }
-    }  // print to stdout
+    }
 
-  break;
-  }
-    default:
-    printf("Usage: tail <filename> [-n number]\n");
-    break;
-}
+    // Write last N lines
+    write(1, filebuf + start, size - start);
 
+    // Ensure newline at the end
+    if(size == 0 || filebuf[size-1] != '\n')
+        write(1, "\n", 1);
 
-  exit(0);
-}
-
+    free(filebuf);
+    exit(0);
 }

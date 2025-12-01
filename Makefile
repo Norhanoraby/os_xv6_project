@@ -124,7 +124,7 @@ mkfs/mkfs: mkfs/mkfs.c $K/fs.h $K/param.h
 .PRECIOUS: %.o
 
 UPROGS=\
-        $U/_add\
+    $U/_add\
 	$U/_touch\
 	$U/_find\
 	$U/_keycount\
@@ -149,6 +149,8 @@ UPROGS=\
 	$U/_tail\
 	$U/_cp\
 	$U/_nano\
+	$U/_mv\
+	$U/_diff\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)

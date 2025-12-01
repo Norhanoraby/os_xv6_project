@@ -5,19 +5,42 @@
 
 char buf[512];
 
-void
-wc(int fd, char *name)
-{
+// Flags for controlling output
+int flag_lines = 0;
+int flag_words = 0;
+int flag_chars = 0;
+int flag_longest = 0;
+int show_all = 1;  // If no flags specified, show all
+
+// Totals for multiple files
+int total_l = 0;
+int total_w = 0;
+int total_c = 0;
+int total_L = 0;
+int file_count = 0;
+
+void wc(int fd, char *name) {
   int i, n;
   int l, w, c, inword;
-
+  int longest_line = 0;
+  int current_line_len = 0;
+  
   l = w = c = 0;
   inword = 0;
+  
   while((n = read(fd, buf, sizeof(buf))) > 0){
     for(i=0; i<n; i++){
       c++;
-      if(buf[i] == '\n')
+      current_line_len++;
+      
+      if(buf[i] == '\n'){
         l++;
+        if(current_line_len - 1 > longest_line){
+          longest_line = current_line_len - 1;
+        }
+        current_line_len = 0;
+      }
+      
       if(strchr(" \r\t\n\v", buf[i]))
         inword = 0;
       else if(!inword){
@@ -26,24 +49,82 @@ wc(int fd, char *name)
       }
     }
   }
+  
+  // Check final line if it doesn't end with newline
+  if(current_line_len > 0 && current_line_len > longest_line){
+    longest_line = current_line_len;
+  }
+  
   if(n < 0){
     printf("wc: read error\n");
     exit(1);
   }
-  printf("%d %d %d %s\n", l, w, c, name);
+  
+  // Update totals
+  total_l += l;
+  total_w += w;
+  total_c += c;
+  if(longest_line > total_L){
+    total_L = longest_line;
+  }
+  file_count++;
+  
+  // Print results based on flags
+  if(show_all){
+    printf("%d %d %d", l, w, c);
+  } else {
+    if(flag_lines)
+      printf("%d ", l);
+    if(flag_words)
+      printf("%d ", w);
+    if(flag_chars)
+      printf("%d ", c);
+    if(flag_longest)
+      printf("%d ", longest_line);
+  }
+  
+  printf("%s\n", name);
 }
 
-int
-main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
   int fd, i;
-
-  if(argc <= 1){
+  int first_file_idx = 1;
+  
+  // Parse flags
+  for(i = 1; i < argc && argv[i][0] == '-'; i++){
+    char *flag = argv[i];
+    int j;
+    
+    for(j = 1; flag[j] != '\0'; j++){
+      if(flag[j] == 'l'){
+        flag_lines = 1;
+        show_all = 0;
+      } else if(flag[j] == 'w'){
+        flag_words = 1;
+        show_all = 0;
+      } else if(flag[j] == 'c'){
+        flag_chars = 1;
+        show_all = 0;
+      } else if(flag[j] == 'L'){
+        flag_longest = 1;
+        show_all = 0;
+      } else {
+        printf("wc: invalid option -- '%c'\n", flag[j]);
+        printf("Usage: wc [-l] [-w] [-c] [-L] [file ...]\n");
+        exit(1);
+      }
+    }
+    first_file_idx++;
+  }
+  
+  // If no files specified, read from stdin
+  if(first_file_idx >= argc){
     wc(0, "");
     exit(0);
   }
-
-  for(i = 1; i < argc; i++){
+  
+  // Process each file
+  for(i = first_file_idx; i < argc; i++){
     if((fd = open(argv[i], O_RDONLY)) < 0){
       printf("wc: cannot open %s\n", argv[i]);
       exit(1);
@@ -51,5 +132,23 @@ main(int argc, char *argv[])
     wc(fd, argv[i]);
     close(fd);
   }
+  
+  // Print totals if multiple files
+  if(file_count > 1){
+    if(show_all){
+      printf("%d %d %d", total_l, total_w, total_c);
+    } else {
+      if(flag_lines)
+        printf("%d ", total_l);
+      if(flag_words)
+        printf("%d ", total_w);
+      if(flag_chars)
+        printf("%d ", total_c);
+      if(flag_longest)
+        printf("%d ", total_L);
+    }
+    printf("total\n");
+  }
+  
   exit(0);
 }

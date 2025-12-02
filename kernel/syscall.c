@@ -105,6 +105,7 @@ extern uint64 sys_kbdint(void);
 extern uint64 sys_countsyscall(void);
 extern uint64 syscall_count; 
 extern uint64 sys_getppid(void);
+extern uint64 sys_shutdown(void);
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
@@ -133,6 +134,7 @@ static uint64 (*syscalls[])(void) = {
 [SYS_kbdint]  sys_kbdint,
 [SYS_countsyscall] sys_countsyscall,
 [SYS_getppid] sys_getppid,
+[SYS_shutdown] sys_shutdown,
 };
 
 void

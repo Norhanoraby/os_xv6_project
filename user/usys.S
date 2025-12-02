@@ -120,3 +120,8 @@ getppid:
  li a7, SYS_getppid
  ecall
  ret
+.global shutdown
+shutdown:
+ li a7, SYS_shutdown
+ ecall
+ ret

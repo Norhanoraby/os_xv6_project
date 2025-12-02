@@ -102,3 +102,11 @@ sys_getppid(void)
 {
   return myproc()->parent->pid;
 }
+uint64
+sys_shutdown(void)
+{
+  printf("shutting down \n");
+  volatile uint32 *shutdown_reg=(uint32 *)0x100000;
+  *shutdown_reg=0x5555;
+  return 0;
+}

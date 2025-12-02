@@ -153,6 +153,8 @@ UPROGS=\
 	$U/_diff\
     $U/_syscount\
     $U/_ppid\
+	$U/_shutdown\
+	$U/_uptime\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)

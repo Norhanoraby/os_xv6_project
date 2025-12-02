@@ -91,3 +91,11 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+uint64
+sys_shutdown(void)
+{
+  printf("Shutting down \n");
+  volatile uint32 *shutdown_reg=(uint32 *)0x100000;
+ *shutdown_reg =0x5555;
+  return 0;
+}

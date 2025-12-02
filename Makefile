@@ -151,6 +151,10 @@ UPROGS=\
 	$U/_nano\
 	$U/_mv\
 	$U/_diff\
+	$U/_shutdown\
+	$U/_uptime\
+	$U/_syscount\
+    $U/_ppid\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)

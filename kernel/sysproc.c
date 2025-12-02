@@ -91,3 +91,14 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+uint64 syscall_count = 0;
+uint64
+sys_countsyscall(void)
+{
+  return syscall_count;
+}
+uint64
+sys_getppid(void)
+{
+  return myproc()->parent->pid;
+}

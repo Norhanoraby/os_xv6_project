@@ -110,3 +110,13 @@ kbdint:
  li a7, SYS_kbdint
  ecall
  ret
+.global countsyscall
+countsyscall:
+ li a7, SYS_countsyscall
+ ecall
+ ret
+.global getppid
+getppid:
+ li a7, SYS_getppid
+ ecall
+ ret

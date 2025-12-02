@@ -37,4 +37,5 @@ entry("sbrk");
 entry("sleep");
 entry("uptime");
 entry("kbdint");
-entry("shutdown");
+entry("countsyscall");
+entry("getppid");

@@ -91,11 +91,14 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+uint64 syscall_count = 0;
 uint64
-sys_shutdown(void)
+sys_countsyscall(void)
 {
-  printf("Shutting down \n");
-  volatile uint32 *shutdown_reg=(uint32 *)0x100000;
- *shutdown_reg =0x5555;
-  return 0;
+  return syscall_count;
+}
+uint64
+sys_getppid(void)
+{
+  return myproc()->parent->pid;
 }

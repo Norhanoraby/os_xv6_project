@@ -23,4 +23,3 @@
 #define SYS_kbdint 22
 #define SYS_countsyscall 23
 #define SYS_getppid 24
-#define SYS_shutdown 25

@@ -39,3 +39,5 @@ entry("uptime");
 entry("kbdint");
 entry("countsyscall");
 entry("getppid");
+entry("shutdown");
+entry("rand")

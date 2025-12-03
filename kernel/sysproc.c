@@ -5,6 +5,7 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+//#include "date.h"   
 
 uint64
 sys_exit(void)
@@ -102,3 +103,100 @@ sys_getppid(void)
 {
   return myproc()->parent->pid;
 }
+uint64
+sys_shutdown(void)
+{
+  printf("shutting down \n");
+  volatile uint32 *shutdown_reg=(uint32 *)0x100000;
+  *shutdown_reg=0x5555;
+  return 0;
+}
+
+// Simple kernel PRNG using LCG
+static unsigned int lcg_state = 1;
+
+uint64
+sys_rand(void)
+{
+  // Seed only once using ticks (global variable provided by xv6)
+  extern uint ticks;
+  if (lcg_state == 1)
+    lcg_state = ticks + 1;  // avoid 0 seed
+
+  // LCG formula
+  lcg_state = (1103515245 * lcg_state + 12345) & 0x7fffffff;
+
+  return lcg_state;
+}
+
+
+
+// Memory-mapped mtime address (from memlayout.h)
+#define MTIME 0x0200BFF8UL
+volatile uint64* mtime = (uint64*)MTIME;
+
+/*uint64
+sys_date(void)
+{
+    struct rtcdate d;
+    uint64 addr;
+
+    // Get the user pointer to the rtcdate struct
+    if(argaddr(0, &addr) < 0)
+        return -1;
+
+    // Read elapsed cycles from mtime register
+    uint64 ticks_since_boot = *mtime;
+
+    // Convert cycles to seconds (mtime increments at 10MHz in QEMU)
+    uint64 elapsed_seconds = ticks_since_boot / 10000000;
+
+    // Compute current UNIX timestamp
+    uint64 current_time = BOOT_EPOCH + elapsed_seconds;
+
+    // Convert current_time to human-readable date
+    // Simple algorithm for converting UNIX timestamp
+    // (for xv6 you can use a minimal version)
+    int sec = current_time % 60;
+    int min = (current_time / 60) % 60;
+    int hour = (current_time / 3600) % 24;
+
+    int days = current_time / 86400;
+
+    // naive approximation for year/month/day
+    int year = 1970;
+    while(days >= 365){
+        if((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))
+            days -= 366;
+        else
+            days -= 365;
+        year++;
+    }
+    int month = 1;
+    int month_days[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
+    if((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))
+        month_days[1] = 29;
+    for(int i=0;i<12;i++){
+        if(days >= month_days[i]){
+            days -= month_days[i];
+            month++;
+        } else break;
+    }
+    int day = days + 1;
+
+    // Fill struct
+    d.year = year;
+    d.month = month;
+    d.day = day;
+    d.hour = hour;
+    d.minute = min;
+    d.second = sec;
+
+    // Copy struct to user space
+    if(copyout(myproc()->pagetable, addr, (char*)&d, sizeof(d)) < 0)
+        return -1;
+
+    return 0;
+}*/
+
+

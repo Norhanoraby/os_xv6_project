@@ -6,6 +6,14 @@
 #include "spinlock.h"
 #include "proc.h"
 
+struct proc_info {
+  int pid;
+  int ppid;
+  int state;
+  char name[16];
+  uint64 sz;
+};
+
 uint64
 sys_exit(void)
 {
@@ -102,3 +110,28 @@ sys_getppid(void)
 {
   return myproc()->parent->pid;
 }
+<<<<<<< Updated upstream
+=======
+uint64
+sys_shutdown(void)
+{
+  printf("shutting down \n");
+  volatile uint32 *shutdown_reg=(uint32 *)0x100000;
+  *shutdown_reg=0x5555;
+  return 0;
+}
+uint64
+sys_getptable(void)
+{
+  int nproc;
+  uint64 buffer;
+  
+  argint(0, &nproc);
+  argaddr(1, &buffer);
+  
+  return getptable(nproc, buffer);
+}
+
+// System call implementation in proc.c
+
+>>>>>>> Stashed changes

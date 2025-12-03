@@ -120,3 +120,16 @@ getppid:
  li a7, SYS_getppid
  ecall
  ret
+<<<<<<< Updated upstream
+=======
+.global shutdown
+shutdown:
+ li a7, SYS_shutdown
+ ecall
+ ret
+.global getptable
+getptable:
+ li a7, SYS_getptable
+ ecall
+ ret
+>>>>>>> Stashed changes

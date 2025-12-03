@@ -25,6 +25,12 @@ int uptime(void);
 int kbdint(void);
 int countsyscall(void);
 int getppid(void);
+<<<<<<< Updated upstream
+=======
+int shutdown(void);
+int uptime(void);
+int getptable(int, uint64);
+>>>>>>> Stashed changes
 
 // ulib.c
 int stat(const char*, struct stat*);

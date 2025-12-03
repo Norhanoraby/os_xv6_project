@@ -153,6 +153,13 @@ UPROGS=\
 	$U/_diff\
     $U/_syscount\
     $U/_ppid\
+<<<<<<< Updated upstream
+=======
+	$U/_shutdown\
+	$U/_uptime\
+	$U/_getptable\
+	$U/_schedtest\
+>>>>>>> Stashed changes
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)

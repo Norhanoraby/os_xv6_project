@@ -39,3 +39,8 @@ entry("uptime");
 entry("kbdint");
 entry("countsyscall");
 entry("getppid");
+<<<<<<< Updated upstream
+=======
+entry("shutdown");
+entry("getptable");
+>>>>>>> Stashed changes

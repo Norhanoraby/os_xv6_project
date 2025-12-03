@@ -30,7 +30,11 @@ Disassembly of section .text:
   2e:	e04a                	sd	s2,0(sp)
   30:	1000                	addi	s0,sp,32
   32:	00000517          	auipc	a0,0x0
+<<<<<<< Updated upstream
   36:	3c650513          	addi	a0,a0,966 # 3f8 <getppid+0x8>
+=======
+  36:	3d650513          	addi	a0,a0,982 # 408 <getptable+0x8>
+>>>>>>> Stashed changes
   3a:	fc7ff0ef          	jal	0 <print>
   3e:	4481                	li	s1,0
   40:	3e800913          	li	s2,1000
@@ -40,18 +44,30 @@ Disassembly of section .text:
   4e:	2485                	addiw	s1,s1,1
   50:	ff249ae3          	bne	s1,s2,44 <forktest+0x1e>
   54:	00000517          	auipc	a0,0x0
+<<<<<<< Updated upstream
   58:	3f450513          	addi	a0,a0,1012 # 448 <getppid+0x58>
+=======
+  58:	40450513          	addi	a0,a0,1028 # 458 <getptable+0x58>
+>>>>>>> Stashed changes
   5c:	fa5ff0ef          	jal	0 <print>
   60:	4505                	li	a0,1
   62:	2de000ef          	jal	340 <exit>
   66:	2da000ef          	jal	340 <exit>
   6a:	00000517          	auipc	a0,0x0
+<<<<<<< Updated upstream
   6e:	39e50513          	addi	a0,a0,926 # 408 <getppid+0x18>
+=======
+  6e:	3ae50513          	addi	a0,a0,942 # 418 <getptable+0x18>
+>>>>>>> Stashed changes
   72:	f8fff0ef          	jal	0 <print>
   76:	4505                	li	a0,1
   78:	2c8000ef          	jal	340 <exit>
   7c:	00000517          	auipc	a0,0x0
+<<<<<<< Updated upstream
   80:	3a450513          	addi	a0,a0,932 # 420 <getppid+0x30>
+=======
+  80:	3b450513          	addi	a0,a0,948 # 430 <getptable+0x30>
+>>>>>>> Stashed changes
   84:	f7dff0ef          	jal	0 <print>
   88:	4505                	li	a0,1
   8a:	2b6000ef          	jal	340 <exit>
@@ -66,7 +82,11 @@ Disassembly of section .text:
   a6:	57fd                	li	a5,-1
   a8:	fcf51ae3          	bne	a0,a5,7c <forktest+0x56>
   ac:	00000517          	auipc	a0,0x0
+<<<<<<< Updated upstream
   b0:	38c50513          	addi	a0,a0,908 # 438 <getppid+0x48>
+=======
+  b0:	39c50513          	addi	a0,a0,924 # 448 <getptable+0x48>
+>>>>>>> Stashed changes
   b4:	f4dff0ef          	jal	0 <print>
   b8:	60e2                	ld	ra,24(sp)
   ba:	6442                	ld	s0,16(sp)
@@ -756,3 +776,26 @@ getppid:
  3f2:	00000073          	ecall
  ret
  3f6:	8082                	ret
+<<<<<<< Updated upstream
+=======
+
+00000000000003f8 <shutdown>:
+.global shutdown
+shutdown:
+ li a7, SYS_shutdown
+ 3f8:	48e5                	li	a7,25
+ ecall
+ 3fa:	00000073          	ecall
+ ret
+ 3fe:	8082                	ret
+
+0000000000000400 <getptable>:
+.global getptable
+getptable:
+ li a7, SYS_getptable
+ 400:	48e9                	li	a7,26
+ ecall
+ 402:	00000073          	ecall
+ ret
+ 406:	8082                	ret
+>>>>>>> Stashed changes

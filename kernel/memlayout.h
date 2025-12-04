@@ -57,3 +57,7 @@
 //   TRAPFRAME (p->trapframe, used by the trampoline)
 //   TRAMPOLINE (the same page as in the kernel)
 #define TRAPFRAME (TRAMPOLINE - PGSIZE)
+
+#define CLINT 0x2000000ULL
+#define CLINT_MTIME (CLINT + 0xBFF8)    // machine time register (cycles since boot)
+

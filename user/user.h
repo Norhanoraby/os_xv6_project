@@ -1,5 +1,7 @@
 struct stat;
 
+struct rtcdate;
+
 // system calls
 int fork(void);
 int exit(int) __attribute__((noreturn));
@@ -27,6 +29,8 @@ int countsyscall(void);
 int getppid(void);
 int shutdown(void);
 int uptime(void);
+int random(void);
+int datetime(struct rtcdate *);
 
 // ulib.c
 int stat(const char*, struct stat*);

@@ -40,3 +40,5 @@ entry("kbdint");
 entry("countsyscall");
 entry("getppid");
 entry("shutdown");
+entry ("random");
+entry("datetime");

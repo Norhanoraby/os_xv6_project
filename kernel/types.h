@@ -8,3 +8,12 @@ typedef unsigned int  uint32;
 typedef unsigned long uint64;
 
 typedef uint64 pde_t;
+
+struct rtcdate {
+  int second;
+  int minute;
+  int hour;
+  int day;
+  int month;
+  int year;
+};

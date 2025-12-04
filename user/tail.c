@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
     int start = 0;
     for(int i = size-1; i >= 0; i--) {
         if(filebuf[i] == '\n') linecount++;
-        if(linecount == n ) {
+        if(linecount == n) {
             start = i + 1;
             break;
         }

@@ -24,21 +24,24 @@ void wc(int fd, char *name) {
   int l, w, c, inword;
   int longest_line = 0;
   int current_line_len = 0;
+  int has_content = 0;
   
   l = w = c = 0;
   inword = 0;
   
   while((n = read(fd, buf, sizeof(buf))) > 0){
     for(i=0; i<n; i++){
-      c++;
-      current_line_len++;
-      
       if(buf[i] == '\n'){
         l++;
-        if(current_line_len - 1 > longest_line){
-          longest_line = current_line_len - 1;
+        if(current_line_len > longest_line){
+          longest_line = current_line_len;
         }
         current_line_len = 0;
+        has_content = 0;
+      } else {
+        c++;  // Only count non-newline characters
+        current_line_len++;
+        has_content = 1;
       }
       
       if(strchr(" \r\t\n\v", buf[i]))
@@ -50,9 +53,12 @@ void wc(int fd, char *name) {
     }
   }
   
-  // Check final line if it doesn't end with newline
-  if(current_line_len > 0 && current_line_len > longest_line){
-    longest_line = current_line_len;
+  // If file doesn't end with newline but has content, count the last line
+  if(has_content || current_line_len > 0){
+    l++;
+    if(current_line_len > longest_line){
+      longest_line = current_line_len;
+    }
   }
   
   if(n < 0){
@@ -69,21 +75,27 @@ void wc(int fd, char *name) {
   }
   file_count++;
   
-  // Print results based on flags
-  if(show_all){
-    printf("%d %d %d", l, w, c);
-  } else {
-    if(flag_lines)
-      printf("%d ", l);
-    if(flag_words)
-      printf("%d ", w);
-    if(flag_chars)
-      printf("%d ", c);
-    if(flag_longest)
-      printf("%d ", longest_line);
-  }
+  // Print results based on flags with readable format
+  char *display_name = (name[0] == '\0') ? "stdin" : name;
   
-  printf("%s\n", name);
+  if(show_all){
+    printf("File: %s\n", display_name);
+    printf("  Lines: %d\n", l);
+    printf("  Words: %d\n", w);
+    printf("  Characters: %d\n", c);
+    printf("\n");
+  } else {
+    printf("File: %s\n", display_name);
+    if(flag_lines)
+      printf("  Lines: %d\n", l);
+    if(flag_words)
+      printf("  Words: %d\n", w);
+    if(flag_chars)
+      printf("  Characters: %d\n", c);
+    if(flag_longest)
+      printf("  Longest line: %d\n", longest_line);
+    printf("\n");
+  }
 }
 
 int main(int argc, char *argv[]) {
@@ -135,19 +147,22 @@ int main(int argc, char *argv[]) {
   
   // Print totals if multiple files
   if(file_count > 1){
+    printf("===== TOTAL =====\n");
     if(show_all){
-      printf("%d %d %d", total_l, total_w, total_c);
+      printf("  Lines: %d\n", total_l);
+      printf("  Words: %d\n", total_w);
+      printf("  Characters: %d\n", total_c);
     } else {
       if(flag_lines)
-        printf("%d ", total_l);
+        printf("  Lines: %d\n", total_l);
       if(flag_words)
-        printf("%d ", total_w);
+        printf("  Words: %d\n", total_w);
       if(flag_chars)
-        printf("%d ", total_c);
+        printf("  Characters: %d\n", total_c);
       if(flag_longest)
-        printf("%d ", total_L);
+        printf("  Longest line: %d\n", total_L);
     }
-    printf("total\n");
+    printf("\n");
   }
   
   exit(0);

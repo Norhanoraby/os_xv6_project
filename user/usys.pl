@@ -41,3 +41,5 @@ entry("countsyscall");
 entry("getppid");
 entry("shutdown");
 entry("rand")
+entry("getptable");
+

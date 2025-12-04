@@ -1,7 +1,5 @@
 struct stat;
 
-struct datetime{int year,month,day,hour,minute,second;};
-
 // system calls
 int fork(void);
 int exit(int) __attribute__((noreturn));
@@ -30,6 +28,7 @@ int getppid(void);
 int shutdown(void);
 int uptime(void);
 int rand (void);
+int getptable(int, uint64);
 
 // ulib.c
 int stat(const char*, struct stat*);

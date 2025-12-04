@@ -11,6 +11,13 @@ struct cpu cpus[NCPU];
 struct proc proc[NPROC];
 
 struct proc *initproc;
+struct proc_info {
+  int pid;
+  int ppid;
+  int state;
+  char name[16];
+  uint64 sz;
+};
 
 int nextpid = 1;
 struct spinlock pid_lock;
@@ -29,6 +36,56 @@ struct spinlock wait_lock;
 // Allocate a page for each process's kernel stack.
 // Map it high in memory, followed by an invalid
 // guard page.
+int
+getptable(int nproc, uint64 buffer)
+{
+  struct proc *p;
+  struct proc_info pinfo;
+  int count = 0;
+  
+  // Validate input parameters
+  if (nproc < 1 || buffer == 0) {
+    return 0;  // Failure: invalid parameters
+  }
+  
+  // Get pointer to current process for copyout
+  struct proc *curproc = myproc();
+  
+  // Iterate through the process table
+  for (p = proc; p < &proc[NPROC]; p++) {
+    acquire(&p->lock);
+    
+    // Check if process slot is in use (not UNUSED)
+    if (p->state != UNUSED) {
+      // Check if we've reached the requested number of processes
+      if (count >= nproc) {
+        release(&p->lock);
+        break;
+      }
+      
+      // Fill the proc_info structure
+      pinfo.pid = p->pid;
+      pinfo.ppid = (p->parent) ? p->parent->pid : 0;  // Handle init process
+      pinfo.state = p->state;
+      strncpy(pinfo.name, p->name, 16);
+      pinfo.name[15] = '\0';  // Ensure null termination
+      pinfo.sz = p->sz;
+      
+      // Copy the structure to user space
+      if (copyout(curproc->pagetable, buffer + (count * sizeof(struct proc_info)),
+                  (char *)&pinfo, sizeof(struct proc_info)) < 0) {
+        release(&p->lock);
+        return 0;  // Failure: copyout failed
+      }
+      
+      count++;
+    }
+    
+    release(&p->lock);
+  }
+  
+  return 1;  // Success
+}
 void
 proc_mapstacks(pagetable_t kpgtbl)
 {
@@ -118,7 +175,9 @@ allocproc(void)
     } else {
       release(&p->lock);
     }
+    
   }
+
   return 0;
 
 found:
@@ -145,6 +204,8 @@ found:
   memset(&p->context, 0, sizeof(p->context));
   p->context.ra = (uint64)forkret;
   p->context.sp = p->kstack + PGSIZE;
+  p->creation_time = ticks;
+  p->run_time = 0;
 
   return p;
 }
@@ -442,6 +503,39 @@ wait(uint64 addr)
 //  - eventually that process transfers control
 //    via swtch back to the scheduler.
 void
+update_time()
+{
+  struct proc* p;
+  for (p = proc; p < &proc[NPROC]; p++) {
+    acquire(&p->lock);//n3adel mn hena
+    if (p->state == RUNNING) {
+      p->run_time++;
+    }
+    
+    release(&p->lock);//lehd hena
+  }
+}
+int sched_mode = SCHED_ROUND_ROBIN;  // Assign the chosen scheduler here
+struct proc *choose_next_process() {
+
+  struct proc *p;
+
+  if(sched_mode == SCHED_ROUND_ROBIN) {
+    for(p = proc; p < &proc[NPROC]; p++) {
+      if (p->state == RUNNABLE)
+        return p;
+      }
+  }
+ /* else if (sched_mode == SCHED_FCFS) {
+    // TODO
+    return p;
+  }*/
+  
+  // Add more else statements each time you create a new scheduler
+
+  return 0;
+}
+void
 scheduler(void)
 {
   struct proc *p;
@@ -455,12 +549,13 @@ scheduler(void)
     intr_on();
 
     int found = 0;
-    for(p = proc; p < &proc[NPROC]; p++) {
+
+    p = choose_next_process();
+
+    if(p != 0) {
       acquire(&p->lock);
-      if(p->state == RUNNABLE) {
-        // Switch to chosen process.  It is the process's job
-        // to release its lock and then reacquire it
-        // before jumping back to us.
+
+      if (p->state == RUNNABLE) {
         p->state = RUNNING;
         c->proc = p;
         swtch(&c->context, &p->context);
@@ -479,7 +574,6 @@ scheduler(void)
     }
   }
 }
-
 // Switch to scheduler.  Must hold only p->lock
 // and have changed proc->state. Saves and restores
 // intena because intena is a property of this

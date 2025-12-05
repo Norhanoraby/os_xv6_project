@@ -25,12 +25,6 @@ void strip_newlines(char *buf)
         buf[len-1] = 0;
         len--;
     }
-
-    // Remove trailing carriage return
-    if(len > 0 && buf[len-1] == '\r'){
-        buf[len-1] = 0;
-        len--;
-    }
 }
 
 int main(int argc, char *argv[])

@@ -8,7 +8,7 @@ main(void)
     printf("System uptime: %d ticks\n", t);
 
     
-    printf("Approx uptime: %d seconds\n", t / 100);//conert ticks to sec 
+    printf("Approx uptime: %d seconds\n", t / 10);//conert ticks to sec 
 //ya3ne kol 100 tick = 1 sec
     exit(0);
 }

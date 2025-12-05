@@ -125,3 +125,13 @@ shutdown:
  li a7, SYS_shutdown
  ecall
  ret
+.global random
+random:
+ li a7, SYS_random
+ ecall
+ ret
+.global datetime
+datetime:
+ li a7, SYS_datetime
+ ecall
+ ret

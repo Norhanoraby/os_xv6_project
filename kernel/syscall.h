@@ -24,5 +24,6 @@
 #define SYS_countsyscall 23
 #define SYS_getppid 24
 #define SYS_shutdown 25
-#define SYS_rand 26
+#define SYS_random 26
 #define SYS_getptable 27
+#define SYS_datetime 28

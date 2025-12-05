@@ -40,6 +40,7 @@ entry("kbdint");
 entry("countsyscall");
 entry("getppid");
 entry("shutdown");
-entry("rand");
+entry("random");
 entry("getptable");
+entry("datetime");
 

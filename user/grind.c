@@ -42,7 +42,7 @@ do_rand(unsigned long *ctx)
 unsigned long rand_next = 1;
 
 int
-myrand(void)
+rand(void)
 {
     return (do_rand(&rand_next));
 }

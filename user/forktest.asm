@@ -45,7 +45,7 @@ forktest(void)
 
   print("fork test\n");
   32:	00000517          	auipc	a0,0x0
-  36:	3de50513          	addi	a0,a0,990 # 410 <getptable+0x8>
+  36:	3e650513          	addi	a0,a0,998 # 418 <datetime+0x8>
   3a:	fc7ff0ef          	jal	0 <print>
 
   for(n=0; n<N; n++){
@@ -67,7 +67,7 @@ forktest(void)
   if(n == N){
     print("fork claimed to work N times!\n");
   54:	00000517          	auipc	a0,0x0
-  58:	40c50513          	addi	a0,a0,1036 # 460 <getptable+0x58>
+  58:	41450513          	addi	a0,a0,1044 # 468 <datetime+0x58>
   5c:	fa5ff0ef          	jal	0 <print>
     exit(1);
   60:	4505                	li	a0,1
@@ -80,7 +80,7 @@ forktest(void)
     if(wait(0) < 0){
       print("wait stopped early\n");
   6a:	00000517          	auipc	a0,0x0
-  6e:	3b650513          	addi	a0,a0,950 # 420 <getptable+0x18>
+  6e:	3be50513          	addi	a0,a0,958 # 428 <datetime+0x18>
   72:	f8fff0ef          	jal	0 <print>
       exit(1);
   76:	4505                	li	a0,1
@@ -91,7 +91,7 @@ forktest(void)
   if(wait(0) != -1){
     print("wait got too many\n");
   7c:	00000517          	auipc	a0,0x0
-  80:	3bc50513          	addi	a0,a0,956 # 438 <getptable+0x30>
+  80:	3c450513          	addi	a0,a0,964 # 440 <datetime+0x30>
   84:	f7dff0ef          	jal	0 <print>
     exit(1);
   88:	4505                	li	a0,1
@@ -114,7 +114,7 @@ forktest(void)
 
   print("fork test OK\n");
   ac:	00000517          	auipc	a0,0x0
-  b0:	3a450513          	addi	a0,a0,932 # 450 <getptable+0x48>
+  b0:	3ac50513          	addi	a0,a0,940 # 458 <datetime+0x48>
   b4:	f4dff0ef          	jal	0 <print>
 }
   b8:	60e2                	ld	ra,24(sp)
@@ -822,10 +822,10 @@ shutdown:
  ret
  3fe:	8082                	ret
 
-0000000000000400 <rand>:
-.global rand
-rand:
- li a7, SYS_rand
+0000000000000400 <random>:
+.global random
+random:
+ li a7, SYS_random
  400:	48e9                	li	a7,26
  ecall
  402:	00000073          	ecall
@@ -841,3 +841,13 @@ getptable:
  40a:	00000073          	ecall
  ret
  40e:	8082                	ret
+
+0000000000000410 <datetime>:
+.global datetime
+datetime:
+ li a7, SYS_datetime
+ 410:	48f1                	li	a7,28
+ ecall
+ 412:	00000073          	ecall
+ ret
+ 416:	8082                	ret

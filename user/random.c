@@ -3,7 +3,7 @@
 
 int main(void)
 {
-    int r = rand();
+    int r = random();
     printf("rand = %d\n", r);
     exit(0);
 }

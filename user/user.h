@@ -27,8 +27,9 @@ int countsyscall(void);
 int getppid(void);
 int shutdown(void);
 int uptime(void);
-int rand (void);
+int random(void);
 int getptable(int, uint64);
+int datetime(struct rtcdate*);
 
 // ulib.c
 int stat(const char*, struct stat*);

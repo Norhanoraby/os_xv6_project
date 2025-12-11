@@ -108,6 +108,8 @@ int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
 void            update_time();
 int             getptable(int, uint64);
+int             setscheduler(int);//edit beta3na
+int             wait_sched(uint64, uint64, uint64);//end edit beta3na
 
 // swtch.S
 void            swtch(struct context*, struct context*);

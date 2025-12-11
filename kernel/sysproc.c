@@ -140,7 +140,37 @@ sys_getptable(void)
   
   return getptable(nproc, buffer);
 }
+// Import the global variable
+extern int sched_mode; 
 
+uint64
+sys_set_sched(void)
+{
+  int mode;
+  // Read the 1st argument passed to the syscall
+ argint(0, &mode);
+  
+  // Validations
+  if(mode != 0 && mode != 1) // 0=RR, 1=FCFS
+      return -1;
+
+  sched_mode = mode; // UPDATE THE GLOBAL VARIABLE
+  return 0; // Success
+}
+uint64
+sys_wait_sched(void)
+{
+  uint64 p_status; // Pointer for status
+  uint64 p_tt;     // Pointer for Turnaround Time
+  uint64 p_wt;     // Pointer for Waiting Time
+
+  // Retrieve the 3 addresses passed by the user
+  if(argaddr(0, &p_status) < 0) return -1;
+  if(argaddr(1, &p_tt) < 0)     return -1;
+  if(argaddr(2, &p_wt) < 0)     return -1;
+
+  return wait_sched(p_status, p_tt, p_wt);
+}
 
 
 

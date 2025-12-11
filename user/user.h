@@ -30,6 +30,8 @@ int uptime(void);
 int random(void);
 int getptable(int, uint64);
 int datetime(struct rtcdate*);
+int set_sched(int);
+int wait_sched(int*, int*, int*);
 
 // ulib.c
 int stat(const char*, struct stat*);

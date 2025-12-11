@@ -43,4 +43,6 @@ entry("shutdown");
 entry("random");
 entry("getptable");
 entry("datetime");
+entry("set_sched");
+entry("wait_sched");
 

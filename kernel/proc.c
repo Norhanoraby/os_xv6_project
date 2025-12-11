@@ -206,6 +206,12 @@ found:
   p->context.sp = p->kstack + PGSIZE;
   p->creation_time = ticks;
   p->run_time = 0;
+  //edits beta3etna
+  p->turnaround_time=0;
+  p->waiting_time = 0;
+  p->finish_time = 0;
+  //end of edits
+
 
   return p;
 }
@@ -229,6 +235,13 @@ freeproc(struct proc *p)
   p->chan = 0;
   p->killed = 0;
   p->xstate = 0;
+  // edits beta3etna
+   p->creation_time= ticks;
+   p->run_time = 0;
+  p->turnaround_time = 0;
+  p->waiting_time= 0;
+  p->finish_time = 0;
+  // end of edits
   p->state = UNUSED;
 }
 
@@ -435,10 +448,16 @@ exit(int status)
   wakeup(p->parent);
   
   acquire(&p->lock);
-
+  // edits beta3etna
+  p->finish_time = ticks;
+  p->turnaround_time = p->finish_time - p->creation_time;
+  //p->waiting_time = p->turnaround_time - p->run_time;
+    if(sched_mode == SCHED_FCFS) {
+    //printf("[FCFS] PID %d: TT=%d, WT=%d, RT=%d\n",
+           //p->pid, p->turnaround_time, p->waiting_time, p->run_time);
+  }// end of edits
   p->xstate = status;
   p->state = ZOMBIE;
-
   release(&wait_lock);
 
   // Jump into the scheduler, never to return.
@@ -448,6 +467,70 @@ exit(int status)
 
 // Wait for a child process to exit and return its pid.
 // Return -1 if this process has no children.
+// Same logic as wait(), but sends TT and WT to user
+int
+wait_sched(uint64 addr, uint64 addr_tt, uint64 addr_wt)
+{
+  struct proc *np;
+  int havekids, pid;
+  struct proc *p = myproc();
+
+  acquire(&wait_lock);
+
+  for(;;){
+    // Scan through table looking for zombie children
+    havekids = 0;
+    for(np = proc; np < &proc[NPROC]; np++){
+      if(np->parent == p){
+        acquire(&np->lock);
+        havekids = 1;
+        if(np->state == ZOMBIE){
+          // Found one!
+          pid = np->pid;
+          
+          // 1. Copy Exit Status (Standard)
+          if(addr != 0 && copyout(p->pagetable, addr, (char *)&np->xstate,
+                                  sizeof(np->xstate)) < 0) {
+            release(&np->lock);
+            release(&wait_lock);
+            return -1;
+          }
+
+          // 2. NEW: Copy Turnaround Time
+          if(addr_tt != 0 && copyout(p->pagetable, addr_tt, (char *)&np->turnaround_time,
+                                     sizeof(int)) < 0) {
+            release(&np->lock);
+            release(&wait_lock);
+            return -1;
+          }
+
+          // 3. NEW: Copy Waiting Time
+          if(addr_wt != 0 && copyout(p->pagetable, addr_wt, (char *)&np->waiting_time,
+                                     sizeof(int)) < 0) {
+             release(&np->lock);
+             release(&wait_lock);
+             return -1;
+          }
+
+          freeproc(np);
+          release(&np->lock);
+          release(&wait_lock);
+          return pid;
+        }
+        release(&np->lock);
+      }
+    }
+
+    // No kids? Return -1.
+    if(!havekids || p->killed){
+      release(&wait_lock);
+      return -1;
+    }
+    
+    // Wait for children to exit
+    sleep(p, &wait_lock);  
+  }
+}
 int
 wait(uint64 addr)
 {
@@ -511,12 +594,16 @@ update_time()
     if (p->state == RUNNING) {
       p->run_time++;
     }
-    
+    //edit beta3na
+    if (p->state == RUNNABLE) {
+      p->waiting_time++;
+    }
     release(&p->lock);//lehd hena
   }
 }
 int sched_mode = SCHED_ROUND_ROBIN;  // Assign the chosen scheduler here
 struct proc *choose_next_process() {
+ 
 
   struct proc *p;
 
@@ -526,11 +613,29 @@ struct proc *choose_next_process() {
         return p;
       }
   }
- /* else if (sched_mode == SCHED_FCFS) {
-    // TODO
-    return p;
-  }*/
-  
+
+  else if (sched_mode == SCHED_FCFS) {
+    // TODO edits beta3etna 
+     //edits beta3etna
+  struct proc *min_proc = 0;
+     for(p = proc; p < &proc[NPROC]; p++) {
+      acquire(&p->lock);
+      if(p->state == RUNNABLE) {
+            // If we haven't found a candidate yet, or this one is older
+            if(min_proc == 0 || p->creation_time < min_proc->creation_time) {
+              if(min_proc != 0) release(&min_proc->lock); // Release prev candidate
+              min_proc= p; // Keep lock held for the new candidate
+              continue; // Continue searching
+            }
+          }
+          release(&p->lock);
+        }
+        if(min_proc!= 0) {
+          release(&min_proc->lock);
+        }
+
+    return min_proc;
+  }
   // Add more else statements each time you create a new scheduler
 
   return 0;

@@ -7,6 +7,6 @@ main(void)
     printf("Calling shutdown...\n");
     shutdown();
     // If shutdown works, you will NEVER see this line:
-    printf("Shutdown failed (you should not see this).\n");
+    printf("Shutdown failed....\n");
     exit(0);
 }

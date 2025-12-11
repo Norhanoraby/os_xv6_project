@@ -110,6 +110,8 @@ extern uint64 sys_shutdown(void);
 extern uint64 sys_random(void);
 extern uint64 sys_getptable(void);
 extern uint64 sys_datetime(void);
+extern uint64 sys_set_sched(void);
+extern uint64 sys_wait_sched(void);
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
@@ -142,6 +144,8 @@ static uint64 (*syscalls[])(void) = {
 [SYS_random] sys_random,
 [SYS_getptable] sys_getptable,
 [SYS_datetime] sys_datetime,
+[SYS_set_sched] sys_set_sched,
+[SYS_wait_sched] sys_wait_sched,
 
 };
 

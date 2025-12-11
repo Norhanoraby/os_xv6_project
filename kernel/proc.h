@@ -111,5 +111,10 @@ struct proc {
   char name[16];               // Process name (debugging)
   uint creation_time;          // Ticks when process was created
   uint run_time;               // How long the process has run
+  //edits beta3etna
+  uint finish_time; 
+  uint turnaround_time; 
+  uint waiting_time; 
+  //end of edits
 };
 

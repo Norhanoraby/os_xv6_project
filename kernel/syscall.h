@@ -27,3 +27,5 @@
 #define SYS_random 26
 #define SYS_getptable 27
 #define SYS_datetime 28
+#define SYS_set_sched 29
+#define SYS_wait_sched 30

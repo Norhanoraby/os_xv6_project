@@ -2,6 +2,7 @@
 #include "kernel/stat.h"
 #include "user/user.h"
 #include "kernel/fcntl.h"
+#define SCHED_FCFS 1
 
 
 int main(int argc, char *argv[]) {
@@ -10,6 +11,13 @@ int main(int argc, char *argv[]) {
   int k, nprocess = 10;
   int z, steps = 1000000;
   char buffer_src[1024], buffer_dst[1024];
+  int status, tt, wt;
+  int total_tt = 0, total_wt = 0;
+  if (set_sched(SCHED_FCFS) < 0) {
+       printf("Error setting scheduler\n");
+       exit(1);
+  }
+  printf("Scheduler set to FCFS. Creating 10 processes...\n");
 
 
   for (k = 0; k < nprocess; k++) {
@@ -37,10 +45,24 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  for (k = 0; k < nprocess; k++) {
-    pid = wait(0);
-    printf("[pid=%d] terminated\n", pid);
-  }
-
-  exit(0);
+    for (k = 0; k < nprocess; k++) {
+        pid = wait_sched(&status, &tt, &wt);
+        if(pid > 0) {
+            printf("[pid=%d] terminated. turnaround=%d, wait=%d\n", pid, tt, wt);
+            // Sum them up for the average calculation
+            total_tt += tt;
+            total_wt += wt;
+        } else {
+            printf("Error in wait_sched\n");
+        }
+    }
+    
+    // Calculate and Print Averages
+    printf("Avg turnaround time:%d.%d\n", total_tt / nprocess, 
+           (total_tt * 10 / nprocess) % 10);
+    printf("Avg wait time:%d.%d\n", total_wt / nprocess,
+           (total_wt * 10 / nprocess) % 10);
+    
+    exit(0);
 }
+ 

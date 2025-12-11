@@ -140,3 +140,13 @@ datetime:
  li a7, SYS_datetime
  ecall
  ret
+.global set_sched
+set_sched:
+ li a7, SYS_set_sched
+ ecall
+ ret
+.global wait_sched
+wait_sched:
+ li a7, SYS_wait_sched
+ ecall
+ ret

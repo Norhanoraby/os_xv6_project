@@ -2,7 +2,6 @@
 #include "kernel/stat.h"
 #include "user/user.h"
 #include "kernel/fcntl.h"
-#define SCHED_FCFS 1
 
 
 int main(int argc, char *argv[]) {
@@ -13,16 +12,29 @@ int main(int argc, char *argv[]) {
   char buffer_src[1024], buffer_dst[1024];
   int status, tt, wt;
   int total_tt = 0, total_wt = 0;
-  if (set_sched(SCHED_FCFS) < 0) {
-       printf("Error setting scheduler\n");
+  int mode = 0; // roundrobin
+  if (argc >= 2) {
+      mode = atoi(argv[1]); // Read mode from command line (e.g., "2")
+  }
+  if (set_sched(mode) < 0) {
+       printf("Error setting scheduler (Mode %d)\n", mode);
        exit(1);
   }
-  printf("Scheduler set to FCFS. Creating 10 processes...\n");
+  if(mode == 1) 
+      printf("Scheduler set to FCFS. Creating 10 processes...\n");
+  else if (mode ==2)
+      printf("Scheduler set to priority. Creating 10 processes...\n");
+  else
+  printf("Scheduler set to RoundRobin. Creating 10 processes...\n");
+
 
 
   for (k = 0; k < nprocess; k++) {
     // ensure different creation times (proc->ctime)
     // needed for properly testing FCFS scheduling
+    if (mode == 2) 
+        sleep(1); // Faster creation for Priority
+    else 
     sleep(2);
 
     pid = fork();
@@ -62,7 +74,8 @@ int main(int argc, char *argv[]) {
            (total_tt * 10 / nprocess) % 10);
     printf("Avg wait time:%d.%d\n", total_wt / nprocess,
            (total_wt * 10 / nprocess) % 10);
+           
+    set_sched(0);
     
     exit(0);
 }
- 

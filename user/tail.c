@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
             printf("Usage: tail <filename> [-n number]\n");
             exit(0);
         }
-        n = atoi(argv[3]);
+        n = atoi(argv[3]);// lw rakam negative 
         if(n <= 0) {
             printf("tail: invalid number of lines '%s'\n", argv[3]);
             exit(0);
@@ -48,8 +48,8 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
 
-    int size = 0;
-    int r;
+    int size = 0;// Tracks how much we have read so far
+    int r;// Tracks how much we read in THIS loop
     while((r = read(fd, buf, sizeof(buf))) > 0) {
         if(size + r > MAX_FILE_SIZE) {
             printf("tail: file too large\n");
@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
     int linecount = 0;
     int start = 0;
     for(int i = size-1; i >= 0; i--) {
-        if(filebuf[i] == '\n') linecount++;
+        if(filebuf[i] == '\n') linecount++; // i found the end of the line
         if(linecount == n) {
             start = i + 1;
             break;

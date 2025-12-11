@@ -151,7 +151,7 @@ sys_set_sched(void)
  argint(0, &mode);
   
   // Validations
-  if(mode != 0 && mode != 1) // 0=RR, 1=FCFS
+  if(mode != 0 && mode != 1 && mode !=2) // 0=RR, 1=FCFS, 2=prio
       return -1;
 
   sched_mode = mode; // UPDATE THE GLOBAL VARIABLE

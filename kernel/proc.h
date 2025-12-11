@@ -2,6 +2,7 @@
 // schedular constants to set the scheduling mode
 #define SCHED_ROUND_ROBIN 0
 #define SCHED_FCFS        1
+#define SCHED_PRIORITY    2
 
 extern int sched_mode;  // Declare global scheduler mode// Saved registers for kernel context switches.
 struct context {
@@ -96,6 +97,7 @@ struct proc {
   int killed;                  // If non-zero, have been killed
   int xstate;                  // Exit status to be returned to parent's wait
   int pid;                     // Process ID
+  int priority;
 
   // wait_lock must be held when using this:
   struct proc *parent;         // Parent process
@@ -111,7 +113,7 @@ struct proc {
   char name[16];               // Process name (debugging)
   uint creation_time;          // Ticks when process was created
   uint run_time;               // How long the process has run
-  //edits beta3etna
+  //edits beta3etna Declaration
   uint finish_time; 
   uint turnaround_time; 
   uint waiting_time; 

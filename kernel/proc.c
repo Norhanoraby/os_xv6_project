@@ -207,6 +207,10 @@ found:
   p->creation_time = ticks;
   p->run_time = 0;
   //edits beta3etna
+  if (p->pid % 2 != 0)
+      p->priority = 10;
+  else
+      p->priority = 5;
   p->turnaround_time=0;
   p->waiting_time = 0;
   p->finish_time = 0;
@@ -452,10 +456,10 @@ exit(int status)
   p->finish_time = ticks;
   p->turnaround_time = p->finish_time - p->creation_time;
   //p->waiting_time = p->turnaround_time - p->run_time;
-    if(sched_mode == SCHED_FCFS) {
+    /*if(sched_mode == SCHED_FCFS) {
     //printf("[FCFS] PID %d: TT=%d, WT=%d, RT=%d\n",
            //p->pid, p->turnaround_time, p->waiting_time, p->run_time);
-  }// end of edits
+  }// end of edits*/
   p->xstate = status;
   p->state = ZOMBIE;
   release(&wait_lock);
@@ -585,6 +589,8 @@ wait(uint64 addr)
 //  - swtch to start running that process.
 //  - eventually that process transfers control
 //    via swtch back to the scheduler.
+
+#define SCHED_PRIORITY 2
 void
 update_time()
 {
@@ -637,9 +643,39 @@ struct proc *choose_next_process() {
     return min_proc;
   }
   // Add more else statements each time you create a new scheduler
+  else if (sched_mode == SCHED_PRIORITY) {
+      
+      // Step A: Find the Highest Priority Value in the entire list
+      int max_prio = -1;
+      
+      for(p = proc; p < &proc[NPROC]; p++) {
+        acquire(&p->lock);
+        if(p->state == RUNNABLE) {
+            if(p->priority > max_prio) {
+                max_prio = p->priority;
+            }
+        }
+        release(&p->lock);
+      }
+
+      // If nobody is runnable, return 0
+      if(max_prio == -1) return 0;
+
+      // Step B: Return the first process that matches that Max Priority
+      // (This acts as Round Robin among the VIPs)
+      for(p = proc; p < &proc[NPROC]; p++) {
+          acquire(&p->lock);
+          if(p->state == RUNNABLE && p->priority == max_prio) {
+              release(&p->lock); // Unlock before returning
+              return p;
+          }
+          release(&p->lock);
+      }
+  }
 
   return 0;
 }
+
 void
 scheduler(void)
 {

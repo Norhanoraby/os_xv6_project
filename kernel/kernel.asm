@@ -13379,8 +13379,8 @@ uint64 unix_secs = BOOT_EPOCH + (mtime_val / MTIME_FREQ);
 
 //TO adjust cairo 
 unix_secs+=7200;
-    80005e7a:	693c17b7          	lui	a5,0x693c1
-    80005e7e:	73e78793          	addi	a5,a5,1854 # 693c173e <_entry-0x16c3e8c2>
+    80005e7a:	693c37b7          	lui	a5,0x693c3
+    80005e7e:	6eb78793          	addi	a5,a5,1771 # 693c36eb <_entry-0x16c3c915>
     80005e82:	973e                	add	a4,a4,a5
   uint64 rem = secs % 86400;
     80005e84:	66d5                	lui	a3,0x15

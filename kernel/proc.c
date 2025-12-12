@@ -455,7 +455,7 @@ exit(int status)
   // edits beta3etna
   p->finish_time = ticks;
   p->turnaround_time = p->finish_time - p->creation_time;
-  //p->waiting_time = p->turnaround_time - p->run_time;
+  p->waiting_time = p->turnaround_time - p->run_time;
     /*if(sched_mode == SCHED_FCFS) {
     //printf("[FCFS] PID %d: TT=%d, WT=%d, RT=%d\n",
            //p->pid, p->turnaround_time, p->waiting_time, p->run_time);
@@ -601,9 +601,9 @@ update_time()
       p->run_time++;
     }
     //edit beta3na
-    if (p->state == RUNNABLE) {
+    /*if (p->state == RUNNABLE) {
       p->waiting_time++;
-    }
+    }*/
     release(&p->lock);//lehd hena
   }
 }

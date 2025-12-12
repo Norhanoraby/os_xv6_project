@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
   char buffer_src[1024], buffer_dst[1024];
   int status, tt, wt;
   int total_tt = 0, total_wt = 0;
-  int mode = 0; // roundrobin
+  int mode = 0; // roundrobin el default beta3e
   if (argc >= 2) {
       mode = atoi(argv[1]); // Read mode from command line (e.g., "2")
   }

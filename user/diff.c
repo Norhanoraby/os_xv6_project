@@ -19,18 +19,11 @@ int readline(int fd, char *buf, int max)
 void strip_newlines(char *buf)
 {
     int len = strlen(buf);
-
-    // Remove trailing newline
     if(len > 0 && buf[len-1] == '\n'){
         buf[len-1] = 0;
         len--;
     }
 
-    // Remove trailing carriage return
-    if(len > 0 && buf[len-1] == '\r'){
-        buf[len-1] = 0;
-        len--;
-    }
 }
 
 int main(int argc, char *argv[])
@@ -64,7 +57,6 @@ int main(int argc, char *argv[])
         if(n1 == 0 && n2 == 0)
             break;
 
-        // *** FIXED PART: strip newline and CR ***
         strip_newlines(b1);
         strip_newlines(b2);
 

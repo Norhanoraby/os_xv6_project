@@ -72,12 +72,12 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
 
-    int size = 0;
+    int size = 0;// Tracks how much we have read so far
   5a:	4481                	li	s1,0
     if(!filebuf) {
   5c:	0e050c63          	beqz	a0,154 <main+0x154>
   60:	21613023          	sd	s6,512(sp)
-    int r;
+    int r;// Tracks how much we read in THIS loop
     while((r = read(fd, buf, sizeof(buf))) > 0) {
         if(size + r > MAX_FILE_SIZE) {
   64:	6b09                	lui	s6,0x2
@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
             exit(0);
   e8:	4501                	li	a0,0
   ea:	394000ef          	jal	47e <exit>
-        n = atoi(argv[3]);
+        n = atoi(argv[3]);// lw rakam negative 
   ee:	6c88                	ld	a0,24(s1)
   f0:	298000ef          	jal	388 <atoi>
   f4:	8aaa                	mv	s5,a0
@@ -207,7 +207,7 @@ int main(int argc, char *argv[]) {
  198:	06064163          	bltz	a2,1fa <main+0x1fa>
     int linecount = 0;
  19c:	4701                	li	a4,0
-        if(filebuf[i] == '\n') linecount++;
+        if(filebuf[i] == '\n') linecount++; // i found the end of the line
  19e:	46a9                	li	a3,10
  1a0:	a801                	j	1b0 <main+0x1b0>
         if(linecount == n) {
@@ -216,7 +216,7 @@ int main(int argc, char *argv[]) {
  1a6:	167d                	addi	a2,a2,-1
  1a8:	02061793          	slli	a5,a2,0x20
  1ac:	0407ce63          	bltz	a5,208 <main+0x208>
-        if(filebuf[i] == '\n') linecount++;
+        if(filebuf[i] == '\n') linecount++; // i found the end of the line
  1b0:	00c987b3          	add	a5,s3,a2
  1b4:	0007c783          	lbu	a5,0(a5)
  1b8:	fed795e3          	bne	a5,a3,1a2 <main+0x1a2>

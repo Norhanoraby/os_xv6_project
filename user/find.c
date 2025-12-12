@@ -40,20 +40,10 @@ int find(char *path, char *target) {
         close(fd);
         return 0;
     }
-
-    // If it's a file, compare filename only
-    if (st.type == T_FILE) {
-        char *filename = path + strlen(path);
-        while (filename > path && *(filename - 1) != '/')//ya3ne hena malesh da3wa bl path ba3ud arga3 lehd mawsal ll file name el howa ba3d akher /
-            filename--;
-
-        if (strcmp(filename, target) == 0) {// compare this file name with the target and if match do this
-            printf("%s\n", path);
-            found = 1;
-        }
-
+    if (st.type != T_DIR) {
+        printf("find: '%s' is not a directory\n", path);
         close(fd);
-        return found;
+        return 0;
     }
 
     // Directory case: scan contents
@@ -69,17 +59,29 @@ int find(char *path, char *target) {
         memmove(p, de.name, DIRSIZ);//copy the 14 byte fixed filename
         p[DIRSIZ] = 0; // null-terminate
 
-        if (strcmp(de.name, target) == 0) {//check filename with target
-            printf("%s\n", buf);//print the full path
-            found = 1;
+        if (stat(buf, &st) < 0 ) {//check filename with target
+            printf("find: cannot stat %s\n", buf);
+            continue;
         }
 
         // If directory → recurse, ex: /home/user/a.txt "ya3ne badawar gowa el home ba3den akhush 3ala user w adawar till i reach file"
-        if (stat(buf, &st) == 0 && st.type == T_DIR) {
+        if ( st.type == T_DIR) {
+            if (strcmp(de.name, target) == 0) {
+                printf("find: '%s' is a directory, not a file\n", buf);
+                // We do NOT set found=1, because we haven't found the FILE yet.
+            }
             if (find(buf, target))
                 found = 1; // if found in subdir, mark as found
         }
+        else if (st.type == T_FILE) {
+            // It is a file, NOW we check if the name matches the target
+            if (strcmp(de.name, target) == 0) {
+                printf("%s\n", buf);
+                found = 1;
+            }
+        }
     }
+
 
     close(fd);
     return found;

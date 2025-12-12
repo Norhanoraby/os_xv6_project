@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
   char buffer_src[1024], buffer_dst[1024];
   int status, tt, wt;
   int total_tt = 0, total_wt = 0;
-  int mode = 0; // roundrobin
+  int mode = 0; // roundrobin el default beta3e
   if (argc >= 2) {
   18:	4785                	li	a5,1
   1a:	02a7c163          	blt	a5,a0,3c <main+0x3c>
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
   1e:	4501                	li	a0,0
   20:	506000ef          	jal	526 <set_sched>
   24:	04054163          	bltz	a0,66 <main+0x66>
-  int mode = 0; // roundrobin
+  int mode = 0; // roundrobin el default beta3e
   28:	4981                	li	s3,0
   if(mode == 1) 
       printf("Scheduler set to FCFS. Creating 10 processes...\n");
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
   2a:	00001517          	auipc	a0,0x1
   2e:	ace50513          	addi	a0,a0,-1330 # af8 <malloc+0x196>
   32:	07d000ef          	jal	8ae <printf>
-  int mode = 0; // roundrobin
+  int mode = 0; // roundrobin el default beta3e
   36:	44a9                	li	s1,10
 
 
@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
   5c:	a6850513          	addi	a0,a0,-1432 # ac0 <malloc+0x15e>
   60:	04f000ef          	jal	8ae <printf>
   64:	bfc9                	j	36 <main+0x36>
-  int mode = 0; // roundrobin
+  int mode = 0; // roundrobin el default beta3e
   66:	4981                	li	s3,0
        printf("Error setting scheduler (Mode %d)\n", mode);
   68:	85ce                	mv	a1,s3
